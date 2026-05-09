@@ -1,3 +1,8 @@
+#Natalia Sander
+#Forest Quest
+#4 May 2026
+
+
 import pygame
 import sys
 import random
@@ -6,16 +11,20 @@ import math
 # -----------------------------
 # BASIC SETUP
 # -----------------------------
+
+# This starts pyagme so the program can use fonts, draw graphics etc.
 pygame.init()
 
+# this is the window size for the game screen.
 WIDTH = 900
 HEIGHT = 650
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Forest Quest")
 
+# this controls how fast the game updates.
 clock = pygame.time.Clock()
 
-# Colors
+# Colors - all the colors used during the game.
 DARK_GREEN = (22, 48, 32)
 FOREST_GREEN = (34, 85, 50)
 LIGHT_GREEN = (150, 200, 150)
@@ -40,13 +49,12 @@ SMALL_FONT = pygame.font.SysFont("arial", 18)
 
 
 # -----------------------------
-# HELPER FUNCTION FOR TEXT
+# THIS IS THE HELPER FUNCTION FOR TEXT
 # -----------------------------
 def wrap_text(text, font, max_width):
-    """
-    This makes long text wrap onto multiple lines.
-    Without this, the story text would go off the screen.
-    """
+# this breaks long string of text into shorter lines so everything fits   
+   
+ # a list of shorter text lines that fit on the screen  
     words = text.split(" ")
     lines = []
     current_line = ""
@@ -62,11 +70,9 @@ def wrap_text(text, font, max_width):
     lines.append(current_line)
     return lines
 
-
+#this draws wrapped text on the screen one line at a time.
 def draw_wrapped_text(text, font, color, x, y, max_width, line_height):
-    """
-    This draws wrapped text on the screen line by line.
-    """
+    
     lines = wrap_text(text, font, max_width)
     for i, line in enumerate(lines):
         rendered_line = font.render(line, True, color)
@@ -76,27 +82,21 @@ def draw_wrapped_text(text, font, color, x, y, max_width, line_height):
 # -----------------------------
 # CLASSES
 # -----------------------------
+
+# this one is for one clickable decision the player can make.
+# Each Choice stores the text shown on the button, the ID of the scene it
+    # leads to and optional changes to the player's bravery and wisdom stats.
 class Choice:
-    """
-    A Choice is one option the player can click.
-    Example: "Follow the sound" goes to the scene called "footsteps".
-    """
+   
     def __init__(self, text, next_scene_id, bravery_change=0, wisdom_change=0):
         self.text = text
         self.next_scene_id = next_scene_id
         self.bravery_change = bravery_change
         self.wisdom_change = wisdom_change
 
-
+# this one represents one section of the story. It has story text, a list of choise object and info about whether the scene is ending.
 class Scene:
-    """
-    A Scene is one part of the story.
-    Each scene has:
-    - an ID name
-    - story text
-    - choices
-    - ending information
-    """
+    
     def __init__(self, scene_id, text, choices=None, is_ending=False, ending_title=""):
         self.scene_id = scene_id
         self.text = text
@@ -104,32 +104,30 @@ class Scene:
         self.is_ending = is_ending
         self.ending_title = ending_title
 
-
+# this one stores all the info about the player. The player has bravery and wisdom points that change depending on the choices they make.
 class Player:
-    """
-    The Player stores simple player stats.
-    This is not super complicated, but it shows that your game has a Player class.
-    """
+
+ # creates a new player with starting stats set to zero  
     def __init__(self):
         self.bravery = 0
         self.wisdom = 0
 
+# this resets the player stats when the game restarts
     def reset(self):
         self.bravery = 0
         self.wisdom = 0
 
-
+# this one represents a clickable button on the screen. 
+# the Button class draws a rectangular button, changes its color when the mouse hovers over it and checks whether it has been clicked.
 class Button:
-    """
-    Button draws a rectangle with text.
-    It can check if the mouse clicked inside it.
-    """
+   
     def __init__(self, x, y, width, height, text, color=BROWN, hover_color=GOLD):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.color = color
         self.hover_color = hover_color
 
+# draws the button and changes its color
     def draw(self):
         mouse_pos = pygame.mouse.get_pos()
 
@@ -145,22 +143,18 @@ class Button:
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
 
+# checks if the button was clicked
     def is_clicked(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 return True
         return False
 
-
+# this one controls the entire game
+# this class creates the player, stores all the scenes, handles screen changes, draws the background and scene graphics, processes mouse clicks and runs the main game loop.
 class Game:
-    """
-    The Game class controls everything:
-    - start screen
-    - story screen
-    - ending screen
-    - switching between scenes
-    - player stats
-    """
+
+ # sets up the starting game state, buttons, screen and graphics    
     def __init__(self):
         self.player = Player()
         self.scenes = self.create_scenes()
@@ -171,8 +165,8 @@ class Game:
         self.restart_button = Button(WIDTH // 2 - 130, 500, 260, 60, "Restart Game")
 
 
-        # These lists create simple moving graphics.
-        # Fog slowly moves across the screen.
+       
+        # Fog slowly moving.
         self.fog_clouds = []
         for i in range(9):
             self.fog_clouds.append({
@@ -192,6 +186,7 @@ class Game:
                 "phase": random.uniform(0, 6.28)
             })
 
+# this one creates and returns all story scenes in the game.
     def create_scenes(self):
         scenes = {}
 
@@ -430,12 +425,14 @@ class Game:
 
         return scenes
 
+# this one restarts the game by resetting the player and returning to the first scene.
     def reset_game(self):
         self.player.reset()
         self.current_scene_id = "start"
         self.screen_state = "story_screen"
 
     def draw_forest_background(self):
+        # this one draws the animated forest background, including fog, trees and fireflies.
         # Dark night sky
         screen.fill(PURPLE_BLACK)
 
@@ -499,6 +496,8 @@ class Game:
             pygame.draw.circle(screen, RED, (790, 310), 5)
             pygame.draw.circle(screen, RED, (810, 310), 5)
 
+
+    # this one draws the title screen and the button that starts the game.
     def draw_start_screen(self):
         self.draw_forest_background()
 
@@ -516,11 +515,9 @@ class Game:
 
         self.start_button.draw()
 
+    # this one draws a small custom graphic for the currect scene.
     def draw_scene_graphic(self, scene_id):
-        """
-        More detailed but still clean scene graphics.
-        Style: green, blue, black, and white only.
-        """
+        
         graphic_box = pygame.Rect(250, 330, 400, 140)
         pygame.draw.rect(screen, (5, 15, 18), graphic_box, border_radius=16)
         pygame.draw.rect(screen, (95, 170, 175), graphic_box, 2, border_radius=16)
@@ -637,6 +634,8 @@ class Game:
         # Stop clipping after the scene graphic is done.
         screen.set_clip(old_clip)
 
+
+    # This one draws the current story scene, including text, stats, graphics and choice buttons.
     def draw_story_screen(self):
         self.draw_forest_background()
         current_scene = self.scenes[self.current_scene_id]
@@ -668,6 +667,7 @@ class Game:
             self.choice_buttons.append((button, choice))
             button.draw()
 
+    # this one draws the ending screen, final message, final stats and restrt button.
     def draw_ending_screen(self):
         self.draw_forest_background()
         current_scene = self.scenes[self.current_scene_id]
@@ -694,6 +694,7 @@ class Game:
 
         self.restart_button.draw()
 
+    # handles all player input.
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -718,6 +719,8 @@ class Game:
                 if self.restart_button.is_clicked(event):
                     self.reset_game()
 
+    # runs the main game loop.
+    # the loop repeatedly handles events, draws the correct screen, updates the display and limits the game speed to 60 frames per second.
     def run(self):
         while True:
             self.handle_events()
