@@ -161,6 +161,8 @@ class Game:
         self.current_scene_id = "start"
         self.screen_state = "start_screen"
 
+        # Stores the clickable choice buttons for the current story scene.
+        self.choice_buttons = []
         self.start_button = Button(WIDTH // 2 - 130, 380, 260, 60, "Start Quest")
         self.restart_button = Button(WIDTH // 2 - 130, 500, 260, 60, "Restart Game")
 
